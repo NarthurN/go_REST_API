@@ -42,10 +42,6 @@ var tasks = map[string]Task{
 }
 
 func getTasks(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Only GET method is supported", http.StatusMethodNotAllowed)
-		return
-	}
 	resp, err := json.Marshal(tasks)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -58,11 +54,6 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 func postTask(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Only POST method is supported", http.StatusMethodNotAllowed)
-		return
-	}
-
 	var task Task
 	var buf bytes.Buffer
 
@@ -86,18 +77,11 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 
 	tasks[task.ID] = task
 
-	message := map[string]string{"message": "Задача записана", "id": task.ID}
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(message)
 }
 
 func getTask(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Only GET method is supported", http.StatusMethodNotAllowed)
-		return
-	}
-
 	id := chi.URLParam(r, "id")
 
 	task, ok := tasks[id]
@@ -119,11 +103,6 @@ func getTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteTask(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
-		http.Error(w, "Only DELETE method is supported", http.StatusMethodNotAllowed)
-		return
-	}
-
 	id := chi.URLParam(r, "id")
 
 	if id == "" {
@@ -140,10 +119,8 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 
 	delete(tasks, id)
 
-	message := map[string]string{"message": "Задача удалена", "id": id}
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(message)
 }
 
 func main() {
